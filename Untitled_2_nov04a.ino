@@ -44,8 +44,6 @@ bool isUnlocked = false;
 bool disTyped = false;
 const int servoPin = 18;
 
-//buzzer
-#define buzzer 34
 void setup() {
   Serial.begin(9600); // Correct baud rate
   //WIFI firebase
@@ -83,14 +81,10 @@ void setup() {
   lcd.print("Welcome");
   delay(1000);
   lcd.clear();
-  
-  // buzzer
-  pinMode(buzzer,OUTPUT);
-  digitalWrite(buzzer,LOW);
 }
 
 void loop() 
- { digitalWrite(buzzer,LOW);
+ {
   if (attempt <= 4) {
     z=enterPassword(0);
     fingerID = getFingerprintID();
@@ -106,13 +100,7 @@ void loop()
       digitalWrite(2,HIGH);
       Serial.println("Door opening...");
       myservo.write(180); // Open the lock
-      digitalWrite(buzzer,LOW);
-      delay(330);
-      digitalWrite(buzzer,HIGH);
-      delay(330);
-      digitalWrite(buzzer,LOW);
-      delay(330);
-      digitalWrite(buzzer,HIGH);
+      delay(1000);
          lcd.clear();
          lcd.setCursor(0,0);
          lcd.print("Welcome");
@@ -197,13 +185,7 @@ int enterPassword(int g)
           digitalWrite(2,HIGH);
         
           myservo.write(180); // Open the lock
-          digitalWrite(buzzer,LOW);
-          delay(330);
-          digitalWrite(buzzer,HIGH);
-          delay(330);
-          digitalWrite(buzzer,LOW);
-          delay(330);
-          digitalWrite(buzzer,HIGH);
+          delay(1000);
           Serial.println("lock opening");
               lcd.clear();
               lcd.setCursor(0,0);
@@ -244,9 +226,7 @@ int enterPassword(int g)
             lcd.print("Door not opened");
         Serial.println("Incorrect password.");
         attempt++;
-        digitalWrite(buzzer,LOW);
         delay(1000);
-        digitalWrite(buzzer,HIGH);
             lcd.clear();
       }
       int rssi = -30;//WiFi.RSSI();  // Get the RSSI value
@@ -435,6 +415,7 @@ int getFingerprintID() {
   if (result != FINGERPRINT_OK) {
     lcd.clear();
     lcd.print("Put Properly");
+    delay(300);
     Serial.println("Error converting fingerprint image to template.");
     delay(500);
     return -1; 
@@ -443,11 +424,10 @@ int getFingerprintID() {
   result = finger.fingerFastSearch();
   if (result == FINGERPRINT_NOTFOUND) {
     lcd.clear();
-    lcd.print("No valid finger");
+    lcd.print("Not valid finger");
+    delay(300);
     Serial.println("No valid fingerprint found.");
-    digitalWrite(buzzer,HIGH);
     delay(500);
-    digitalWrite(buzzer,LOW);
     
     return -3; 
   } else if (result != FINGERPRINT_OK) {
