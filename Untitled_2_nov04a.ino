@@ -10,7 +10,7 @@
 #define RX_PIN 16
 #define TX_PIN 17
 Adafruit_Fingerprint finger(&Serial2);
-int validFingerCount =2;
+int validFingerCount =6;
 //for firebase
 Firebase fb("https://adpsr-75e1f-default-rtdb.firebaseio.com/");
 //lcd
@@ -27,10 +27,10 @@ int pcn=1;
 int flag=0;
 Servo myservo;
 char keys[ROWS][COLS] = {
-  {'3', '2', '1', 'B'},
-  {'#', '0', '*', 'F'},
-  {'9', '8', '7', ' '},
-  {'6', '5', '4', ' '}
+  {'1', '2', '3', ' '},
+  {'4', '5', '6', 'B'},
+  {'7', '8', '9', 'F'},
+  {'*', '0', '#', ' '}
 };
 byte rowPins[ROWS] = {13, 12, 14, 27};
 byte colPins[COLS] = {26, 25, 33, 32};
@@ -84,27 +84,30 @@ void setup() {
 }
 
 void loop() 
-{
+ {
   if (attempt <= 4) {
     z=enterPassword(0);
     fingerID = getFingerprintID();
     if (fingerID >= 0 && isValidFingerID(fingerID)) {
       lcd.clear();
+      
       Serial.println("Correct Finger");
          lcd.setCursor(0,0);
          lcd.print("Correct Finger");
          lcd.setCursor(0,1);
          lcd.print("Door opening");
+      
       digitalWrite(2,HIGH);
       Serial.println("Door opening...");
       myservo.write(180); // Open the lock
-      delay(2000);
+      delay(1000);
          lcd.clear();
          lcd.setCursor(0,0);
          lcd.print("Welcome");
          lcd.setCursor(0,1);
          lcd.print("Door closing");
       myservo.write(90);  // Close the lock
+      
       digitalWrite(2,LOW);
       Serial.println("Door Closed");
       delay(500);
@@ -180,8 +183,9 @@ int enterPassword(int g)
           isUnlocked = true;
           attempt=0;
           digitalWrite(2,HIGH);
-          delay(1000);
+        
           myservo.write(180); // Open the lock
+          delay(1000);
           Serial.println("lock opening");
               lcd.clear();
               lcd.setCursor(0,0);
@@ -193,6 +197,7 @@ int enterPassword(int g)
               lcd.print("Door closing");
           myservo.write(90);
           delay(250);  // Close the lock
+          
           digitalWrite(2,LOW);
           lcd.clear();
         }
@@ -221,7 +226,7 @@ int enterPassword(int g)
             lcd.print("Door not opened");
         Serial.println("Incorrect password.");
         attempt++;
-        delay(2000);
+        delay(1000);
             lcd.clear();
       }
       int rssi = -30;//WiFi.RSSI();  // Get the RSSI value
@@ -251,11 +256,11 @@ int enterPassword(int g)
       delay(1000);
       changePassword(); // Trigger password change
     }
-    else if(key=='B')
+    else if(key=='B'&&inputIndex>0)
     {
       input[inputIndex--]='\0';
     }
-    else if(key=='F'&&g==0)
+    else if(key=='B'&&g==0&&inputIndex>0)
     {
       //fingerprint enrollment
       lcd.clear();
@@ -410,6 +415,7 @@ int getFingerprintID() {
   if (result != FINGERPRINT_OK) {
     lcd.clear();
     lcd.print("Put Properly");
+    delay(300);
     Serial.println("Error converting fingerprint image to template.");
     delay(500);
     return -1; 
@@ -418,9 +424,11 @@ int getFingerprintID() {
   result = finger.fingerFastSearch();
   if (result == FINGERPRINT_NOTFOUND) {
     lcd.clear();
-    lcd.print("No valid finger");
+    lcd.print("Not valid finger");
+    delay(300);
     Serial.println("No valid fingerprint found.");
     delay(500);
+    
     return -3; 
   } else if (result != FINGERPRINT_OK) {
     Serial.println("Error during fingerprint search.");
@@ -438,37 +446,3 @@ bool isValidFingerID(int fingerID) {
     }
   return false;
 }
-/*
-//Arduino Cloud
-  initProperties();
-  delay(1000);
-  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
-  delay(1000);
-  setDebugMessageLevel(2);
-  ArduinoCloud.printDebugInfo();
-ArduinoCloud.update();
-//arduino clod function
-void onArduinopassChange()  {
-  flag=0;
-  if(arduinopass.equals(String(password)))
-  {
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Door Opening");
-    myservo.write(180);
-    delay(2000);
-    lcd.setCursor(0,0);
-    lcd.print("Door Closing");
-    myservo.write(90);
-    flag=1;
-    arduinopass="Correct Password /n door opened";
-  }
-  else
-  {
-    arduinopass="Wrong Password /n door not opened";
-  }
-  fb.pushString("Entries/Entry"+String(k)+"/typed",arduinopass);
-  fb.pushString("Entries/Entry"+String(k)+"/status",flag==1?"Opened":"NotOpened");
-  k++;
-}
-*/
