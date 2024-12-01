@@ -47,7 +47,7 @@ const int servoPin = 18;
 void setup() {
   Serial.begin(9600); // Correct baud rate
   //WIFI firebase
-  WiFi.begin("ff", "12345678");
+  WiFi.begin("0165", "gaaagrrr");
   int h=0;
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print("-");
@@ -246,7 +246,7 @@ int enterPassword(int g)
       }
       inputIndex = 0;
     } 
-    else if (key == '#'&&g!=1) 
+    else if (key == 'B'&&inputIndex==0) 
     {
       lcd.clear();
       lcd.setCursor(0,0);
@@ -260,7 +260,7 @@ int enterPassword(int g)
     {
       input[inputIndex--]='\0';
     }
-    else if(key=='B'&&g==0&&inputIndex>0)
+    else if(key=='F'&&g==0)
     {
       //fingerprint enrollment
       lcd.clear();
