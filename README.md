@@ -41,12 +41,8 @@ ADOT is a smart door security system that combines hardware (ESP32/Arduino, keyp
 - All entries are logged to Firebase
 - If an entry is deemed suspicious (low similarity to valid passwords), an alert call is sent
 
-## Security Notes
-- **Do not** hardcode credentials in your code. Use environment variables or config files (not committed to version control)
-- Change default passwords and keep your Firebase and Twilio credentials secure
-
 ## Author
-Rithik (2024)
+Rithik and Sangameshwar (2024)
 
 ---
 *This project is a demonstration of IoT, cloud, and security integration for smart home applications.*
